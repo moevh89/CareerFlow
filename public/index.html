@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerFlow</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/style.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/app.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .kanban-board { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1rem; }
+        .kanban-column { flex: 0 0 300px; background: var(--bg-color); border-radius: var(--border-radius); padding: 1rem; }
+        .kanban-column-header { font-weight: bold; margin-bottom: 1rem; display: flex; justify-content: space-between; }
+        .kanban-card { background: var(--card-bg); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; cursor: grab; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .kanban-card:active { cursor: grabbing; }
+        .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: bold; margin-top: 0.5rem; }
+    </style>
+</head>
+<body x-data="appData()">
+
+    <div id="app" x-cloak>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" x-show="isLoggedIn">
+            <div class="sidebar-logo">CareerFlow</div>
+            <div class="nav-item" :class="{'active': currentView === 'dashboard'}" @click="navigate('dashboard')">Dashboard</div>
+            <div class="nav-item" :class="{'active': currentView === 'board'}" @click="navigate('board')">Kanban Board</div>
+            <div class="nav-item" :class="{'active': currentView === 'companies'}" @click="navigate('companies')">Firmen</div>
+            <div style="flex-grow: 1;"></div>
+            <div class="nav-item" @click="logout()">Logout</div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Auth View -->
+            <div x-show="!isLoggedIn" class="card" style="max-width: 400px; margin: 2rem auto;">
+                <h1>Login</h1>
+                <form @submit.prevent="login">
+                    <input type="email" x-model="authForm.email" placeholder="Email" required>
+                    <input type="password" x-model="authForm.password" placeholder="Passwort" required>
+                    <button type="submit" class="btn" style="width: 100%;">Anmelden</button>
+                </form>
+            </div>
+
+            <!-- Dashboard View -->
+            <div x-show="isLoggedIn && currentView === 'dashboard'">
+                <h1>Dashboard</h1>
+                <div class="grid" style="margin-bottom: 2rem;">
+                    <div class="card">
+                        <h3>Offene Bewerbungen</h3>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--primary);" x-text="dashboardData.active_applications || 0"></p>
+                    </div>
+                    <div class="card">
+                        <h3>Zusagen</h3>
+                        <p style="font-size: 2rem; font-weight: bold; color: #10b981;" x-text="dashboardData.offers || 0"></p>
+                    </div>
+                    <div class="card">
+                        <h3>Absagen</h3>
+                        <p style="font-size: 2rem; font-weight: bold; color: #ef4444;" x-text="dashboardData.rejections || 0"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban Board View -->
+            <div x-show="isLoggedIn && currentView === 'board'">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h1>Kanban Board</h1>
+                    <button class="btn" @click="showNewAppModal = true">+ Neue Bewerbung</button>
+                </div>
+
+                <div class="kanban-board">
+                    <template x-for="status in statuses" :key="status.id">
+                        <div class="kanban-column" @dragover.prevent @drop="drop($event, status.id)">
+                            <div class="kanban-column-header">
+                                <span x-text="status.name"></span>
+                                <span x-text="applications.filter(a => a.status_id == status.id).length" style="color: gray; font-size: 0.8rem;"></span>
+                            </div>
+
+                            <template x-for="app in applications.filter(a => a.status_id == status.id)" :key="app.id">
+                                <div class="kanban-card" draggable="true" @dragstart="dragStart($event, app)">
+                                    <div style="font-weight: bold;" x-text="app.job_title"></div>
+                                    <div style="color: gray; font-size: 0.9rem;" x-text="app.company_name || 'Unbekannte Firma'"></div>
+                                    <div class="badge" :style="'background-color: ' + app.status_color + '40; color: ' + app.status_color" x-text="app.status_name"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- New Application Modal (Simplified) -->
+    <div x-show="showNewAppModal" class="toast-container" style="top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100;" x-cloak>
+        <div class="card" style="width: 400px; position: relative;" @click.away="showNewAppModal = false">
+            <h2>Neue Bewerbung</h2>
+            <form @submit.prevent="createApplication">
+                <input type="text" x-model="newAppForm.job_title" placeholder="Jobtitel" required>
+                <button type="submit" class="btn" style="width: 100%;">Speichern</button>
+                <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewAppModal = false">Abbrechen</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toasts -->
+    <div class="toast-container">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div class="toast" x-text="toast.message"></div>
+        </template>
+    </div>
+</body>
+</html>
