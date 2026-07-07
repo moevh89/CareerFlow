@@ -30,7 +30,7 @@
             <div class="nav-item" :class="{'active': currentView === 'board'}" @click="navigate('board')">Kanban Board</div>
             <div class="nav-item" :class="{'active': currentView === 'companies'}" @click="navigate('companies')">Firmen</div>
             <div style="flex-grow: 1;"></div>
-            <div class="nav-item" @click="logout()">Logout</div>
+            <div class="nav-item" @click="logout()">Abmelden</div>
         </nav>
 
         <!-- Main Content Area -->
@@ -38,9 +38,9 @@
 
             <!-- Auth View -->
             <div x-show="!isLoggedIn" class="card" style="max-width: 400px; margin: 2rem auto;">
-                <h1>Login</h1>
+                <h1>Anmelden</h1>
                 <form @submit.prevent="login">
-                    <input type="email" x-model="authForm.email" placeholder="Email" required>
+                    <input type="email" x-model="authForm.email" placeholder="E-Mail Adresse" required>
                     <input type="password" x-model="authForm.password" placeholder="Passwort" required>
                     <button type="submit" class="btn" style="width: 100%;">Anmelden</button>
                 </form>
@@ -95,7 +95,7 @@
         </main>
     </div>
 
-    <!-- New Application Modal (Simplified) -->
+    <!-- New Application Modal -->
     <div x-show="showNewAppModal" class="toast-container" style="top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100;" x-cloak>
         <div class="card" style="width: 400px; position: relative;" @click.away="showNewAppModal = false">
             <h2>Neue Bewerbung</h2>

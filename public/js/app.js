@@ -51,7 +51,7 @@ document.addEventListener('alpine:init', () => {
                 this.loadDashboard();
                 this.loadApplications();
             } else {
-                this.showToast('Login fehlgeschlagen');
+                this.showToast('Anmeldung fehlgeschlagen. Bitte prüfe deine Daten.');
             }
         },
 
@@ -89,11 +89,13 @@ document.addEventListener('alpine:init', () => {
             });
 
             if (res.ok) {
-                this.showToast('Bewerbung angelegt');
+                this.showToast('Bewerbung erfolgreich angelegt');
                 this.showNewAppModal = false;
                 this.newAppForm.job_title = '';
                 this.loadApplications();
                 this.loadDashboard();
+            } else {
+                this.showToast('Fehler beim Anlegen der Bewerbung');
             }
         },
 
@@ -116,7 +118,7 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 if (!res.ok) {
-                    this.showToast('Fehler beim Aktualisieren');
+                    this.showToast('Fehler beim Aktualisieren des Status');
                     this.loadApplications(); // Revert on failure
                 } else {
                     this.loadDashboard(); // Update counts

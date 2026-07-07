@@ -1,15 +1,43 @@
 <?php
 session_start();
 
-require __DIR__ . '/../vendor/autoload.php';
+// Custom autoloader instead of Composer
+spl_autoload_register(function ($class) {
+    $prefix = 'App\\';
+    $base_dir = __DIR__ . '/../src/';
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+    $relative_class = substr($class, $len);
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+    if (file_exists($file)) {
+        require $file;
+    }
+});
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->safeLoad();
+App\Core\Dotenv::load(__DIR__ . '/../.env');
 
-use App\Core\Migrator;
-Migrator::migrate();
+// If DB configuration is not present, redirect to setup
+if (empty($_ENV['DB_DRIVER']) && !str_contains($_SERVER['REQUEST_URI'], 'setup.php')) {
+    header("Location: /setup.php");
+    die();
+}
 
-use Bramus\Router\Router;
+// Check if tables exist, if not, wait for setup.php
+if (!empty($_ENV['DB_DRIVER'])) {
+    try {
+        $db = App\Core\Database::getInstance()->getConnection();
+        $db->query("SELECT 1 FROM users LIMIT 1");
+    } catch (\Exception $e) {
+        if (!str_contains($_SERVER['REQUEST_URI'], 'setup.php') && !str_contains($_SERVER['REQUEST_URI'], 'api')) {
+            header("Location: /setup.php");
+            die();
+        }
+    }
+}
+
+use App\Core\Router;
 
 $router = new Router();
 
