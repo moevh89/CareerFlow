@@ -40,8 +40,14 @@
             <div x-show="!isLoggedIn" class="card" style="max-width: 400px; margin: 2rem auto;">
                 <h1>Anmelden</h1>
                 <form @submit.prevent="login">
-                    <input type="email" x-model="authForm.email" placeholder="E-Mail Adresse" required>
-                    <input type="password" x-model="authForm.password" placeholder="Passwort" required>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="login-email" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">E-Mail Adresse *</label>
+                        <input id="login-email" type="email" x-model="authForm.email" placeholder="max@muster.de" required style="margin-bottom: 0;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="login-password" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Passwort *</label>
+                        <input id="login-password" type="password" x-model="authForm.password" placeholder="••••••••" required style="margin-bottom: 0;">
+                    </div>
                     <button type="submit" class="btn" style="width: 100%;">Anmelden</button>
                 </form>
             </div>
@@ -100,7 +106,10 @@
         <div class="card" style="width: 400px; position: relative;" @click.away="showNewAppModal = false">
             <h2>Neue Bewerbung</h2>
             <form @submit.prevent="createApplication">
-                <input type="text" x-model="newAppForm.job_title" placeholder="Jobtitel" required>
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="app-job-title" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Jobtitel *</label>
+                    <input id="app-job-title" type="text" x-model="newAppForm.job_title" placeholder="z.B. Frontend Developer" required style="margin-bottom: 0;">
+                </div>
                 <button type="submit" class="btn" style="width: 100%;">Speichern</button>
                 <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewAppModal = false">Abbrechen</button>
             </form>
