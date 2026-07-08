@@ -17,6 +17,8 @@
         .kanban-card { background: var(--card-bg); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; cursor: grab; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
         .kanban-card:active { cursor: grabbing; }
         .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: bold; margin-top: 0.5rem; }
+        .auth-toggle { text-align: center; margin-top: 1rem; font-size: 0.9rem; cursor: pointer; color: var(--primary); }
+        .auth-toggle:hover { text-decoration: underline; }
     </style>
 </head>
 <body x-data="appData()">
@@ -38,12 +40,28 @@
 
             <!-- Auth View -->
             <div x-show="!isLoggedIn" class="card" style="max-width: 400px; margin: 2rem auto;">
-                <h1>Anmelden</h1>
-                <form @submit.prevent="login">
-                    <input type="email" x-model="authForm.email" placeholder="E-Mail Adresse" required>
-                    <input type="password" x-model="authForm.password" placeholder="Passwort" required>
-                    <button type="submit" class="btn" style="width: 100%;">Anmelden</button>
-                </form>
+
+                <div x-show="authMode === 'login'">
+                    <h1>Anmelden</h1>
+                    <form @submit.prevent="login">
+                        <input type="email" x-model="authForm.email" placeholder="E-Mail Adresse" required>
+                        <input type="password" x-model="authForm.password" placeholder="Passwort" required>
+                        <button type="submit" class="btn" style="width: 100%;">Anmelden</button>
+                    </form>
+                    <div class="auth-toggle" @click="authMode = 'register'">Noch keinen Account? Hier registrieren.</div>
+                </div>
+
+                <div x-show="authMode === 'register'">
+                    <h1>Registrieren</h1>
+                    <form @submit.prevent="register">
+                        <input type="text" x-model="authForm.name" placeholder="Dein Name" required>
+                        <input type="email" x-model="authForm.email" placeholder="E-Mail Adresse" required>
+                        <input type="password" x-model="authForm.password" placeholder="Passwort" required>
+                        <button type="submit" class="btn" style="width: 100%;">Account erstellen</button>
+                    </form>
+                    <div class="auth-toggle" @click="authMode = 'login'">Bereits registriert? Hier anmelden.</div>
+                </div>
+
             </div>
 
             <!-- Dashboard View -->
@@ -61,6 +79,13 @@
                     <div class="card">
                         <h3>Absagen</h3>
                         <p style="font-size: 2rem; font-weight: bold; color: #ef4444;" x-text="dashboardData.rejections || 0"></p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h2>Job Funnel</h2>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="funnelChart"></canvas>
                     </div>
                 </div>
             </div>
