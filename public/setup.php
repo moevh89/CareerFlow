@@ -58,7 +58,7 @@ if (!empty($_ENV['DB_DRIVER']) && !$success && empty($error)) {
     try {
         $db = App\Core\Database::getInstance()->getConnection();
         $db->query("SELECT 1 FROM users LIMIT 1");
-        header("Location: /");
+        header("Location: index.php");
         die();
     } catch (\Exception $e) {
         // Table doesn't exist, proceed with setup
@@ -71,7 +71,7 @@ if (!empty($_ENV['DB_DRIVER']) && !$success && empty($error)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CareerFlow - Setup</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         .setup-container { max-width: 500px; margin: 4rem auto; padding: 2rem; }
         .error { color: #ef4444; margin-bottom: 1rem; background: #fee2e2; padding: 1rem; border-radius: 6px; }

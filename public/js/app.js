@@ -24,13 +24,13 @@ document.addEventListener('alpine:init', () => {
         },
 
         async fetchCsrf() {
-            const res = await fetch('/api/csrf-token');
+            const res = await fetch('api/csrf-token');
             const data = await res.json();
             this.csrfToken = data.csrf_token;
         },
 
         async checkAuth() {
-            const res = await fetch('/api/me');
+            const res = await fetch('api/me');
             if (res.ok) {
                 this.isLoggedIn = true;
                 this.loadDashboard();
@@ -39,7 +39,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async login() {
-            const res = await fetch('/api/login', {
+            const res = await fetch('api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...this.authForm, csrf_token: this.csrfToken })
@@ -56,7 +56,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async logout() {
-            await fetch('/api/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csrf_token: this.csrfToken }) });
+            await fetch('api/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csrf_token: this.csrfToken }) });
             this.isLoggedIn = false;
             this.authForm.password = '';
         },
@@ -68,21 +68,21 @@ document.addEventListener('alpine:init', () => {
         },
 
         async loadDashboard() {
-            const res = await fetch('/api/dashboard');
+            const res = await fetch('api/dashboard');
             if (res.ok) {
                 this.dashboardData = await res.json();
             }
         },
 
         async loadApplications() {
-            const res = await fetch('/api/applications');
+            const res = await fetch('api/applications');
             if (res.ok) {
                 this.applications = await res.json();
             }
         },
 
         async createApplication() {
-            const res = await fetch('/api/applications', {
+            const res = await fetch('api/applications', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...this.newAppForm, csrf_token: this.csrfToken })
@@ -111,7 +111,7 @@ document.addEventListener('alpine:init', () => {
                 // Optimistic update
                 app.status_id = statusId;
 
-                const res = await fetch(`/api/applications/${appId}/status`, {
+                const res = await fetch(`api/applications/${appId}/status`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status_id: statusId, csrf_token: this.csrfToken })

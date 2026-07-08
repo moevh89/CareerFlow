@@ -20,7 +20,7 @@ App\Core\Dotenv::load(__DIR__ . '/../.env');
 
 // If DB configuration is not present, redirect to setup
 if (empty($_ENV['DB_DRIVER']) && !str_contains($_SERVER['REQUEST_URI'], 'setup.php')) {
-    header("Location: /setup.php");
+    header("Location: setup.php");
     die();
 }
 
@@ -31,7 +31,7 @@ if (!empty($_ENV['DB_DRIVER'])) {
         $db->query("SELECT 1 FROM users LIMIT 1");
     } catch (\Exception $e) {
         if (!str_contains($_SERVER['REQUEST_URI'], 'setup.php') && !str_contains($_SERVER['REQUEST_URI'], 'api')) {
-            header("Location: /setup.php");
+            header("Location: setup.php");
             die();
         }
     }
