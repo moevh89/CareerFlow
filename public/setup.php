@@ -17,6 +17,18 @@ spl_autoload_register(function ($class) {
 
 App\Core\Dotenv::load(__DIR__ . '/../.env');
 
+// Redirect if already set up
+if (!empty($_ENV['DB_DRIVER'])) {
+    try {
+        $db = App\Core\Database::getInstance()->getConnection();
+        $db->query("SELECT 1 FROM users LIMIT 1");
+        header("Location: /");
+        die();
+    } catch (\Exception $e) {
+        // Table doesn't exist, proceed with setup
+    }
+}
+
 $error = '';
 $success = false;
 
@@ -50,18 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (Exception $e) {
             $error = 'Fehler bei der Migration: ' . $e->getMessage();
         }
-    }
-}
-
-// Redirect if already set up
-if (!empty($_ENV['DB_DRIVER']) && !$success && empty($error)) {
-    try {
-        $db = App\Core\Database::getInstance()->getConnection();
-        $db->query("SELECT 1 FROM users LIMIT 1");
-        header("Location: /");
-        die();
-    } catch (\Exception $e) {
-        // Table doesn't exist, proceed with setup
     }
 }
 ?>
