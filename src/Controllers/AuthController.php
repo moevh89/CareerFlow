@@ -1,28 +1,18 @@
 <?php
 namespace App\Controllers;
 
+use App\Core\Controller;
 use App\Core\Database;
 use App\Core\Auth;
 
-class AuthController {
-
-    private function jsonResponse($data, $status = 200) {
-        header('Content-Type: application/json');
-        http_response_code($status);
-        echo json_encode($data);
-        die();
-    }
+class AuthController extends Controller {
 
     public function getCSRFToken() {
         $this->jsonResponse(['csrf_token' => Auth::generateCSRFToken()]);
     }
 
     public function register() {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
-        }
+        $data = $this->getValidatedJson();
 
         $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
@@ -54,11 +44,7 @@ class AuthController {
     }
 
     public function login() {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
-        }
+        $data = $this->getValidatedJson();
 
         $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
@@ -95,11 +81,7 @@ class AuthController {
     }
 
     public function forgotPassword() {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
-        }
+        $data = $this->getValidatedJson();
 
         $email = $data['email'] ?? '';
 
@@ -110,7 +92,7 @@ class AuthController {
     }
 
     public function googleLogin() {
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $this->getJson();
         $token = $data['token'] ?? '';
         // Placeholder for Google OAuth verification
         // If valid, create or log in user, map google_id
