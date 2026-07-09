@@ -7,7 +7,7 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/style.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- BOLT OPTIMIZATION: Removed Chart.js dependency as it is unused in the application, saving ~200kb of render-blocking network request -->
     <script src="/js/app.js"></script>
     <style>
         [x-cloak] { display: none !important; }
