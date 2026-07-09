@@ -11,6 +11,16 @@ Sie wurde speziell so konzipiert, dass sie auf klassischem Shared Hosting läuft
 - **Datenbank:** MariaDB/MySQL (für Produktion) oder SQLite (für lokale Entwicklung)
 - **Kein Composer:** Das Projekt verwendet einen eigenen, simplen Autoloader (`public/index.php`). Ein `composer install` ist daher **nicht** erforderlich.
 
+## 📁 Projektstruktur
+
+Da dieses Projekt auf ein externes Framework verzichtet, ist die Codebasis wie folgt aufgeteilt:
+
+- `public/` – **Document Root.** Muss vom Webserver ausgeliefert werden. Enthält den Autoloader, den Router (`index.php`), das Frontend (`index.html`, `js/`, `css/`) sowie das Setup-Skript (`setup.php`).
+- `src/` – **Backend-Logik.** Darf nicht öffentlich über das Web erreichbar sein.
+  - `Controllers/` – Endpunkte für die JSON-REST-API.
+  - `Core/` – Grundlagen des eigenen Frameworks (Router, Datenbankverbindung, Auth-Logik).
+- `data/` – **Lokale Datenbank.** Speicherort für die SQLite-Datenbank (`careerflow.sqlite`), falls SQLite für die Entwicklung verwendet wird. Darf nicht öffentlich erreichbar sein.
+
 ## 🛠️ Systemvoraussetzungen
 
 - PHP 8.3 oder neuer
