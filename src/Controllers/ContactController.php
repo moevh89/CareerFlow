@@ -25,10 +25,7 @@ class ContactController extends Controller {
     }
 
     public function store() {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
-        }
+        $data = $this->getValidatedJson();
 
         $db = Database::getInstance()->getConnection();
 
