@@ -26,11 +26,11 @@
         <!-- Sidebar Navigation -->
         <nav class="sidebar" x-show="isLoggedIn">
             <div class="sidebar-logo">CareerFlow</div>
-            <div class="nav-item" :class="{'active': currentView === 'dashboard'}" @click="navigate('dashboard')">Dashboard</div>
-            <div class="nav-item" :class="{'active': currentView === 'board'}" @click="navigate('board')">Kanban Board</div>
-            <div class="nav-item" :class="{'active': currentView === 'companies'}" @click="navigate('companies')">Firmen</div>
+            <button class="nav-item" :class="{'active': currentView === 'dashboard'}" @click="navigate('dashboard')">Dashboard</button>
+            <button class="nav-item" :class="{'active': currentView === 'board'}" @click="navigate('board')">Kanban Board</button>
+            <button class="nav-item" :class="{'active': currentView === 'companies'}" @click="navigate('companies')">Firmen</button>
             <div style="flex-grow: 1;"></div>
-            <div class="nav-item" @click="logout()">Abmelden</div>
+            <button class="nav-item" @click="logout()">Abmelden</button>
         </nav>
 
         <!-- Main Content Area -->
