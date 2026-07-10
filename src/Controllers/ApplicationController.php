@@ -32,6 +32,16 @@ class ApplicationController extends Controller {
         }
 
         $db = Database::getInstance()->getConnection();
+
+        // Verify company belongs to user if company_id is provided
+        if (!empty($data['company_id'])) {
+            $stmt = $db->prepare("SELECT id FROM companies WHERE id = ? AND user_id = ?");
+            $stmt->execute([$data['company_id'], Auth::id()]);
+            if (!$stmt->fetch()) {
+                return $this->jsonResponse(['error' => 'Invalid company'], 400);
+            }
+        }
+
         $db->beginTransaction();
 
         try {
@@ -64,7 +74,7 @@ class ApplicationController extends Controller {
 
         } catch (\Exception $e) {
             $db->rollBack();
-            $this->jsonResponse(['error' => 'Failed to create application: ' . $e->getMessage()], 500);
+            $this->jsonResponse(['error' => 'Failed to create application'], 500);
         }
     }
 
