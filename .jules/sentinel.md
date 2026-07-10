@@ -1,4 +1,4 @@
-## 2024-05-27 - Setup Hijacking Vulnerability
-**Vulnerability:** Setup Hijacking (`public/setup.php`)
-**Learning:** The check to prevent re-execution of the setup script was placed *after* the POST handler. This allowed an unauthenticated attacker to bypass the check and overwrite the `.env` file or re-execute migrations by sending a POST request to an already configured application.
-**Prevention:** Always place access control and state-validation checks at the very beginning of a script, immediately after bootstrapping (loading env vars/autoloader), and *before* processing any user input or state-modifying logic. Use `die()` or `exit()` immediately after redirection.
+## 2024-10-24 - Application Creation IDOR and Info Disclosure
+**Vulnerability:** In `ApplicationController::store()`, there was no validation that the provided `company_id` belonged to the authenticated user (IDOR risk). Additionally, catching exceptions output `$e->getMessage()` to the client, leading to potential database detail leakage.
+**Learning:** We need to explicitly verify relation ownership (like `company_id`) against the authenticated user when processing input payload. Furthermore, error handling should fail securely without passing exception details in JSON responses.
+**Prevention:** Always validate IDs linked to entities owned by users (using `WHERE id = ? AND user_id = ?`) before storing relationships, and remove concatenations of error messages from catch blocks in production JSON responses.
