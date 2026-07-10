@@ -64,11 +64,23 @@ body {
     cursor: pointer;
     transition: background-color 0.2s;
     font-weight: 500;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    width: 100%;
 }
 
 .nav-item:hover, .nav-item.active {
     background-color: var(--bg-color);
     color: var(--primary);
+}
+
+.nav-item:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 .main-content {
@@ -109,6 +121,11 @@ h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; }
 
 .btn:hover { background-color: var(--primary-hover); }
 
+.btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
 input, select, textarea {
     width: 100%;
     padding: 0.5rem;
@@ -117,6 +134,13 @@ input, select, textarea {
     background-color: var(--card-bg);
     color: var(--text-color);
     margin-bottom: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 /* Toast */
