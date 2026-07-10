@@ -11,6 +11,14 @@ Sie wurde speziell so konzipiert, dass sie auf klassischem Shared Hosting läuft
 - **Datenbank:** MariaDB/MySQL (für Produktion) oder SQLite (für lokale Entwicklung)
 - **Kein Composer:** Das Projekt verwendet einen eigenen, simplen Autoloader (`public/index.php`). Ein `composer install` ist daher **nicht** erforderlich.
 
+## 📂 Projektstruktur
+
+Obwohl das Backend im MVC-Muster organisiert ist, gibt es im PHP-Code **keine Views**.
+
+*   `src/`: Beinhaltet ausschließlich die Backend-Logik, welche als reine **JSON REST API** agiert.
+*   `public/`: Beinhaltet das Single-Page-Application (SPA) Frontend (insbesondere `index.html` und `js/app.js`), das Web-Setup (`setup.php`) sowie den Einstiegspunkt (`index.php`).
+*   `data/`: Standard-Verzeichnis für die SQLite-Datenbank bei lokaler Entwicklung.
+
 ## 🛠️ Systemvoraussetzungen
 
 - PHP 8.3 oder neuer
@@ -33,7 +41,13 @@ Sie wurde speziell so konzipiert, dass sie auf klassischem Shared Hosting läuft
    cp .env.example .env
    ```
 
-   *Hinweis:* Standardmäßig ist in der `.env.example` SQLite als Treiber voreingestellt (`DB_DRIVER=sqlite`). Die Datenbankdatei wird dann im Ordner `data/` erwartet (den Ordner ggf. anlegen).
+   Die Anwendung wird über die `.env`-Datei konfiguriert. Folgende Variablen sind verfügbar:
+
+   - `DB_DRIVER`: Datenbanktyp (`sqlite` für lokale Entwicklung, `mysql` für Produktion).
+   - `DB_FILE`: Pfad zur SQLite-Datenbankdatei (nur wenn `DB_DRIVER=sqlite`). Standard: `data/careerflow.sqlite`.
+   - `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`: Verbindungsdaten für MariaDB/MySQL (nur wenn `DB_DRIVER=mysql`).
+
+   *Hinweis:* Standardmäßig ist SQLite als Treiber voreingestellt (`DB_DRIVER=sqlite`). Die Datenbankdatei wird dann im Ordner `data/` erwartet (den Ordner ggf. mit `mkdir data` anlegen).
 
 3. **Lokalen Server starten**
    Starte den integrierten PHP-Server. Wichtig: Das Document Root muss auf den Ordner `public` zeigen.
