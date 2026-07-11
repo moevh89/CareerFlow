@@ -48,7 +48,7 @@
                         <label for="login-password" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Passwort *</label>
                         <input id="login-password" type="password" x-model="authForm.password" placeholder="••••••••" required style="margin-bottom: 0;">
                     </div>
-                    <button type="submit" class="btn" style="width: 100%;">Anmelden</button>
+                    <button type="submit" class="btn" style="width: 100%;" :disabled="isSubmittingLogin" x-text="isSubmittingLogin ? 'Anmeldung...' : 'Anmelden'"></button>
                 </form>
             </div>
 
@@ -110,14 +110,14 @@
                     <label for="app-job-title" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Jobtitel *</label>
                     <input id="app-job-title" type="text" x-model="newAppForm.job_title" placeholder="z.B. Frontend Developer" required style="margin-bottom: 0;">
                 </div>
-                <button type="submit" class="btn" style="width: 100%;">Speichern</button>
+                <button type="submit" class="btn" style="width: 100%;" :disabled="isSubmittingApp" x-text="isSubmittingApp ? 'Speichern...' : 'Speichern'"></button>
                 <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewAppModal = false">Abbrechen</button>
             </form>
         </div>
     </div>
 
     <!-- Toasts -->
-    <div class="toast-container">
+    <div class="toast-container" aria-live="polite" aria-atomic="true">
         <template x-for="toast in toasts" :key="toast.id">
             <div class="toast" x-text="toast.message"></div>
         </template>

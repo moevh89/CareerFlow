@@ -5,6 +5,8 @@ document.addEventListener('alpine:init', () => {
         csrfToken: '',
         toasts: [],
         authForm: { email: '', password: '' },
+        isSubmittingLogin: false,
+        isSubmittingApp: false,
         dashboardData: {},
         applications: [],
         statuses: [
@@ -39,19 +41,24 @@ document.addEventListener('alpine:init', () => {
         },
 
         async login() {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...this.authForm, csrf_token: this.csrfToken })
-            });
+            this.isSubmittingLogin = true;
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...this.authForm, csrf_token: this.csrfToken })
+                });
 
-            if (res.ok) {
-                this.isLoggedIn = true;
-                this.showToast('Erfolgreich angemeldet');
-                this.loadDashboard();
-                this.loadApplications();
-            } else {
-                this.showToast('Anmeldung fehlgeschlagen. Bitte prüfe deine Daten.');
+                if (res.ok) {
+                    this.isLoggedIn = true;
+                    this.showToast('Erfolgreich angemeldet');
+                    this.loadDashboard();
+                    this.loadApplications();
+                } else {
+                    this.showToast('Anmeldung fehlgeschlagen. Bitte prüfe deine Daten.');
+                }
+            } finally {
+                this.isSubmittingLogin = false;
             }
         },
 
@@ -82,20 +89,25 @@ document.addEventListener('alpine:init', () => {
         },
 
         async createApplication() {
-            const res = await fetch('/api/applications', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...this.newAppForm, csrf_token: this.csrfToken })
-            });
+            this.isSubmittingApp = true;
+            try {
+                const res = await fetch('/api/applications', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...this.newAppForm, csrf_token: this.csrfToken })
+                });
 
-            if (res.ok) {
-                this.showToast('Bewerbung erfolgreich angelegt');
-                this.showNewAppModal = false;
-                this.newAppForm.job_title = '';
-                this.loadApplications();
-                this.loadDashboard();
-            } else {
-                this.showToast('Fehler beim Anlegen der Bewerbung');
+                if (res.ok) {
+                    this.showToast('Bewerbung erfolgreich angelegt');
+                    this.showNewAppModal = false;
+                    this.newAppForm.job_title = '';
+                    this.loadApplications();
+                    this.loadDashboard();
+                } else {
+                    this.showToast('Fehler beim Anlegen der Bewerbung');
+                }
+            } finally {
+                this.isSubmittingApp = false;
             }
         },
 
