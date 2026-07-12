@@ -15,20 +15,22 @@ class DashboardController extends Controller {
         $db = Database::getInstance()->getConnection();
         $userId = Auth::id();
 
-        // Active applications
-        $stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ? AND status_id NOT IN (8, 9)"); // 8=Zusage, 9=Absage
+        // ⚡ Bolt Optimization: Batch application stats into a single query instead of three separate COUNT(*) queries.
+        // This reduces N+1-style repetitive queries and table scans, improving dashboard load performance.
+        $stmt = $db->prepare("
+            SELECT
+                COUNT(CASE WHEN status_id NOT IN (8, 9) THEN 1 END) as active_applications,
+                COUNT(CASE WHEN status_id = 8 THEN 1 END) as offers,
+                COUNT(CASE WHEN status_id = 9 THEN 1 END) as rejections
+            FROM applications
+            WHERE user_id = ?
+        ");
         $stmt->execute([$userId]);
-        $activeApplications = $stmt->fetchColumn();
+        $stats = $stmt->fetch();
 
-        // Offers
-        $stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ? AND status_id = 8");
-        $stmt->execute([$userId]);
-        $offers = $stmt->fetchColumn();
-
-        // Rejections
-        $stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ? AND status_id = 9");
-        $stmt->execute([$userId]);
-        $rejections = $stmt->fetchColumn();
+        $activeApplications = $stats['active_applications'] ?? 0;
+        $offers = $stats['offers'] ?? 0;
+        $rejections = $stats['rejections'] ?? 0;
 
         // Upcoming interviews
         $stmt = $db->prepare("
