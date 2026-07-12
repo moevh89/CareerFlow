@@ -21,13 +21,14 @@ class ContactController extends Controller {
             WHERE comp.user_id = ?
         ");
         $stmt->execute([Auth::id()]);
-        $this->jsonResponse($stmt->fetchAll());
+        return $this->jsonResponse($stmt->fetchAll());
     }
 
     public function store() {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
+        $data = $this->getJson();
+
+        if (!$this->validateCsrf($data)) {
+            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
         $db = Database::getInstance()->getConnection();
@@ -36,7 +37,7 @@ class ContactController extends Controller {
         $stmt = $db->prepare("SELECT id FROM companies WHERE id = ? AND user_id = ?");
         $stmt->execute([$data['company_id'] ?? 0, Auth::id()]);
         if (!$stmt->fetch()) {
-             $this->jsonResponse(['error' => 'Invalid company'], 400);
+             return $this->jsonResponse(['error' => 'Invalid company'], 400);
         }
 
         $stmt = $db->prepare("INSERT INTO contacts (company_id, name, position, email, phone, linkedin_profile, notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -51,8 +52,8 @@ class ContactController extends Controller {
         ]);
 
         if ($success) {
-            $this->jsonResponse(['success' => true, 'id' => $db->lastInsertId()]);
+            return $this->jsonResponse(['success' => true, 'id' => $db->lastInsertId()]);
         }
-        $this->jsonResponse(['error' => 'Failed to create contact'], 500);
+        return $this->jsonResponse(['error' => 'Failed to create contact'], 500);
     }
 }
