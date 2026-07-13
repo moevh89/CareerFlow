@@ -26,9 +26,9 @@ class ApplicationController extends Controller {
     }
 
     public function store() {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
+        $data = $this->getJson();
+        if (!$this->validateCsrf($data)) {
+            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
         $db = Database::getInstance()->getConnection();
@@ -69,9 +69,9 @@ class ApplicationController extends Controller {
     }
 
     public function updateStatus($id) {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
+        $data = $this->getJson();
+        if (!$this->validateCsrf($data)) {
+            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
         $db = Database::getInstance()->getConnection();
