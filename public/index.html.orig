@@ -85,7 +85,7 @@
                             <p style="color: gray; font-size: 0.9rem; margin-bottom: 0.5rem;" x-text="company.industry"></p>
                             <p style="font-size: 0.9rem;"><strong style="font-weight: 500;">Ort:</strong> <span x-text="company.location || 'Unbekannt'"></span></p>
                             <p style="font-size: 0.9rem;" x-show="company.website">
-                                <a :href="company.website?.startsWith('http') ? company.website : 'https://' + company.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none;">Webseite besuchen &rarr;</a>
+                                <a :href="company.website.startsWith('http') ? company.website : 'https://' + company.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none;">Webseite besuchen &rarr;</a>
                             </p>
                         </div>
                     </template>
