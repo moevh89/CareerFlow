@@ -17,6 +17,9 @@ document.addEventListener('alpine:init', () => {
         ],
         showNewAppModal: false,
         newAppForm: { job_title: '' },
+        companies: [],
+        showNewCompanyModal: false,
+        newCompanyForm: { name: '', industry: '', location: '', website: '' },
 
         async init() {
             await this.fetchCsrf();
@@ -65,6 +68,7 @@ document.addEventListener('alpine:init', () => {
             this.currentView = view;
             if(view === 'dashboard') this.loadDashboard();
             if(view === 'board') this.loadApplications();
+            if(view === 'companies') this.loadCompanies();
         },
 
         async loadDashboard() {
@@ -96,6 +100,30 @@ document.addEventListener('alpine:init', () => {
                 this.loadDashboard();
             } else {
                 this.showToast('Fehler beim Anlegen der Bewerbung');
+            }
+        },
+
+        async loadCompanies() {
+            const res = await fetch('/api/companies');
+            if (res.ok) {
+                this.companies = await res.json();
+            }
+        },
+
+        async createCompany() {
+            const res = await fetch('/api/companies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...this.newCompanyForm, csrf_token: this.csrfToken })
+            });
+
+            if (res.ok) {
+                this.showToast('Firma erfolgreich angelegt');
+                this.showNewCompanyModal = false;
+                this.newCompanyForm = { name: '', industry: '', location: '', website: '' };
+                this.loadCompanies();
+            } else {
+                this.showToast('Fehler beim Anlegen der Firma');
             }
         },
 
