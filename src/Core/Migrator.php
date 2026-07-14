@@ -120,7 +120,25 @@ class Migrator {
             )"
         ];
 
+        // ⚡ Bolt: Add indexes for frequently queried foreign keys
+        $indexQueries = [
+            "CREATE INDEX IF NOT EXISTS idx_companies_user_id ON companies(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_contacts_company_id ON contacts(company_id)",
+            "CREATE INDEX IF NOT EXISTS idx_applications_user_id ON applications(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_applications_company_id ON applications(company_id)",
+            "CREATE INDEX IF NOT EXISTS idx_applications_status_id ON applications(status_id)",
+            "CREATE INDEX IF NOT EXISTS idx_interviews_application_id ON interviews(application_id)",
+            "CREATE INDEX IF NOT EXISTS idx_documents_application_id ON documents(application_id)",
+            "CREATE INDEX IF NOT EXISTS idx_activity_log_application_id ON activity_log(application_id)",
+            "CREATE INDEX IF NOT EXISTS idx_activity_log_user_id ON activity_log(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_tags_user_id ON tags(user_id)"
+        ];
+
         foreach ($queries as $query) {
+            $db->exec($query);
+        }
+
+        foreach ($indexQueries as $query) {
             $db->exec($query);
         }
 
