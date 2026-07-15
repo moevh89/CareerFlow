@@ -32,6 +32,16 @@ class ApplicationController extends Controller {
         }
 
         $db = Database::getInstance()->getConnection();
+
+        // Verify company belongs to user if company_id is provided
+        if (!empty($data['company_id'])) {
+            $stmt = $db->prepare("SELECT id FROM companies WHERE id = ? AND user_id = ?");
+            $stmt->execute([$data['company_id'], Auth::id()]);
+            if (!$stmt->fetch()) {
+                return $this->jsonResponse(['error' => 'Invalid company'], 403);
+            }
+        }
+
         $db->beginTransaction();
 
         try {
