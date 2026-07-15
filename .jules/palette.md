@@ -1,0 +1,3 @@
+## 2024-07-15 - Alpine.js Modal Accessibility Pattern
+**Learning:** In Alpine.js based modal implementations, standard HTML accessibility attributes (`role="dialog"`, `aria-modal="true"`) need to be combined with specific Alpine directives to be fully effective. Notably, auto-focusing on modal open requires `$nextTick(() => $refs.element.focus())` since the element isn't visible in the DOM during the initial click event.
+**Action:** Always pair visual modal states (`x-show`) with semantic attributes and ensure keyboard navigation (Escape to close, auto-focus on open) is explicitly handled via Alpine directives like `@keydown.escape.window` and `$nextTick`.
