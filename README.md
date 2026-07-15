@@ -35,15 +35,23 @@ Sie wurde speziell so konzipiert, dass sie auf klassischem Shared Hosting läuft
 
    *Hinweis:* Standardmäßig ist in der `.env.example` SQLite als Treiber voreingestellt (`DB_DRIVER=sqlite`). Die Datenbankdatei wird dann im Ordner `data/` erwartet (den Ordner ggf. anlegen).
 
-3. **Lokalen Server starten**
+3. **Datenbank migrieren (SQLite)**
+   Da der webbasierte Setup-Prozess (`/setup.php`) nur MySQL/MariaDB unterstützt, muss die lokale SQLite-Datenbank manuell über die Kommandozeile initialisiert werden:
+
+   ```bash
+   mkdir -p data
+   php -r "require 'src/Core/Dotenv.php'; require 'src/Core/Database.php'; require 'src/Core/Migrator.php'; App\Core\Dotenv::load('.env'); App\Core\Migrator::migrate();"
+   ```
+
+4. **Lokalen Server starten**
    Starte den integrierten PHP-Server. Wichtig: Das Document Root muss auf den Ordner `public` zeigen.
 
    ```bash
    php -S localhost:8000 -t public
    ```
 
-4. **App aufrufen**
-   Öffne `http://localhost:8000` im Browser. Wenn die Datenbank noch nicht konfiguriert ist, leitet dich die App zum Setup-Prozess weiter.
+5. **App aufrufen**
+   Öffne `http://localhost:8000` im Browser. Du solltest nun die Startseite der App sehen.
 
 ## 🌍 Deployment auf Shared Hosting (Produktion)
 
