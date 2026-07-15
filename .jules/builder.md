@@ -1,0 +1,5 @@
+## 2024-07-15 - Alpine UI Element Visibility during Playwright Testing
+
+**Learning:** When using Playwright to test Alpine.js modals that are initially hidden with `x-cloak` and `x-show`, interacting with the elements (like filling inputs) can sometimes fail with "Timeout exceeded" because the elements remain technically invisible to Playwright, especially if navigating via `file://` or if Alpine hydration is delayed. However, triggering the intended user journey (e.g. clicking the trigger button) and ensuring the local PHP server is running (instead of using `file://` protocol) ensures proper asset loading and Alpine component hydration, allowing Playwright to interact normally.
+
+**Action:** When writing Playwright verification scripts for Alpine.js frontends, always run the application using the local PHP server (`php -S localhost:8000 -t public`) and interact with the UI as a real user would (e.g., clicking buttons to open modals) rather than relying solely on `page.evaluate` to force component state changes or navigating via `file://`.

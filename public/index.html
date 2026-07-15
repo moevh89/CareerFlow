@@ -98,6 +98,32 @@
                 </div>
             </div>
 
+            <!-- Companies View -->
+            <div x-show="isLoggedIn && currentView === 'companies'">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h1>Firmen</h1>
+                    <button class="btn" @click="showNewCompanyModal = true">+ Neue Firma</button>
+                </div>
+
+                <div class="grid">
+                    <template x-for="company in companies" :key="company.id">
+                        <div class="card">
+                            <h3 x-text="company.name"></h3>
+                            <p style="color: gray; margin-bottom: 0.5rem;" x-text="company.industry || 'Keine Branche angegeben'"></p>
+                            <template x-if="company.website?.startsWith('http')">
+                                <a :href="company.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none;" x-text="company.website"></a>
+                            </template>
+                            <template x-if="!company.website?.startsWith('http')">
+                                <span style="color: gray; font-size: 0.9rem;">Keine (gültige) Website</span>
+                            </template>
+                        </div>
+                    </template>
+                    <div x-show="companies.length === 0" style="grid-column: 1 / -1; text-align: center; color: gray; padding: 2rem;">
+                        Noch keine Firmen angelegt.
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -112,6 +138,29 @@
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Speichern</button>
                 <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewAppModal = false">Abbrechen</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Company Modal -->
+    <div x-show="showNewCompanyModal" x-init="$watch('showNewCompanyModal', value => { if(value) $nextTick(() => $refs.companyNameInput.focus()) })" class="toast-container" style="top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100;" x-cloak @keydown.escape.window="showNewCompanyModal = false" role="dialog" aria-modal="true" aria-labelledby="modal-title-company">
+        <div class="card" style="width: 400px; position: relative;" @click.away="showNewCompanyModal = false">
+            <h2 id="modal-title-company">Neue Firma</h2>
+            <form @submit.prevent="createCompany">
+                <div style="margin-bottom: 1rem;">
+                    <label for="company-name" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Name *</label>
+                    <input id="company-name" x-ref="companyNameInput" type="text" x-model="newCompanyForm.name" placeholder="z.B. Acme Corp" required style="margin-bottom: 0;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="company-industry" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Branche</label>
+                    <input id="company-industry" type="text" x-model="newCompanyForm.industry" placeholder="z.B. IT" style="margin-bottom: 0;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="company-website" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Website</label>
+                    <input id="company-website" type="url" x-model="newCompanyForm.website" placeholder="https://..." style="margin-bottom: 0;">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Speichern</button>
+                <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewCompanyModal = false">Abbrechen</button>
             </form>
         </div>
     </div>
