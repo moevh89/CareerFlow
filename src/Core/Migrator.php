@@ -117,7 +117,26 @@ class Migrator {
                 PRIMARY KEY (application_id, tag_id),
                 FOREIGN KEY (application_id) REFERENCES applications(id),
                 FOREIGN KEY (tag_id) REFERENCES tags(id)
-            )"
+            )",
+
+            // ⚡ Bolt: Performance optimization
+            // SQLite does not automatically index foreign keys, leading to full table scans
+            // on relationships. We explicitly add them here.
+            "CREATE INDEX IF NOT EXISTS idx_companies_user_id ON companies(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_contacts_company_id ON contacts(company_id)",
+            "CREATE INDEX IF NOT EXISTS idx_applications_user_id ON applications(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_applications_company_id ON applications(company_id)",
+            "CREATE INDEX IF NOT EXISTS idx_applications_status_id ON applications(status_id)",
+            "CREATE INDEX IF NOT EXISTS idx_application_contacts_contact_id ON application_contacts(contact_id)",
+            "CREATE INDEX IF NOT EXISTS idx_interviews_application_id ON interviews(application_id)",
+            "CREATE INDEX IF NOT EXISTS idx_documents_application_id ON documents(application_id)",
+            "CREATE INDEX IF NOT EXISTS idx_activity_log_application_id ON activity_log(application_id)",
+            "CREATE INDEX IF NOT EXISTS idx_activity_log_user_id ON activity_log(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_tags_user_id ON tags(user_id)",
+
+            // Note: idx_application_tags_application_id and idx_application_contacts_application_id
+            // are intentionally omitted as the primary key B-Tree starts with application_id
+            "CREATE INDEX IF NOT EXISTS idx_application_tags_tag_id ON application_tags(tag_id)"
         ];
 
         foreach ($queries as $query) {
