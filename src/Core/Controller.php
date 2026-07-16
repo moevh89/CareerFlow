@@ -12,4 +12,15 @@ class Controller {
     protected function requireAuth() {
         Auth::requireAuth();
     }
+
+    protected function getJson() {
+        return json_decode(file_get_contents('php://input'), true);
+    }
+
+    protected function validateCsrf($data) {
+        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
+            return false;
+        }
+        return true;
+    }
 }
