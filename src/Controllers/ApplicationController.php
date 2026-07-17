@@ -28,10 +28,20 @@ class ApplicationController extends Controller {
     public function store() {
         $data = json_decode(file_get_contents('php://input'), true);
         if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
+            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
         $db = Database::getInstance()->getConnection();
+
+        // Security: Verify company belongs to user if provided
+        if (!empty($data['company_id'])) {
+            $stmt = $db->prepare("SELECT id FROM companies WHERE id = ? AND user_id = ?");
+            $stmt->execute([$data['company_id'], Auth::id()]);
+            if (!$stmt->fetch()) {
+                 return $this->jsonResponse(['error' => 'Invalid company'], 403);
+            }
+        }
+
         $db->beginTransaction();
 
         try {
