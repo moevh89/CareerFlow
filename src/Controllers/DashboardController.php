@@ -43,7 +43,7 @@ class DashboardController extends Controller {
         $stmt->execute([$userId]);
         $upcomingInterviews = $stmt->fetchAll();
 
-        $this->jsonResponse([
+        return $this->jsonResponse([
             'active_applications' => $activeApplications,
             'offers' => $offers,
             'rejections' => $rejections,
