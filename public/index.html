@@ -75,7 +75,7 @@
             <div x-show="isLoggedIn && currentView === 'board'">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <h1>Kanban Board</h1>
-                    <button class="btn" @click="showNewAppModal = true">+ Neue Bewerbung</button>
+                    <button class="btn" @click="showNewAppModal = true; $nextTick(() => $refs.jobTitleInput.focus())">+ Neue Bewerbung</button>
                 </div>
 
                 <div class="kanban-board">
@@ -102,13 +102,13 @@
     </div>
 
     <!-- New Application Modal -->
-    <div x-show="showNewAppModal" class="toast-container" style="top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100;" x-cloak>
-        <div class="card" style="width: 400px; position: relative;" @click.away="showNewAppModal = false">
-            <h2>Neue Bewerbung</h2>
+    <div x-show="showNewAppModal" class="toast-container" style="top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100;" x-cloak @keydown.escape.window="showNewAppModal = false">
+        <div class="card" style="width: 400px; position: relative;" @click.away="showNewAppModal = false" role="dialog" aria-modal="true" aria-labelledby="new-app-title">
+            <h2 id="new-app-title">Neue Bewerbung</h2>
             <form @submit.prevent="createApplication">
                 <div style="margin-bottom: 1.5rem;">
                     <label for="app-job-title" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Jobtitel *</label>
-                    <input id="app-job-title" type="text" x-model="newAppForm.job_title" placeholder="z.B. Frontend Developer" required style="margin-bottom: 0;">
+                    <input id="app-job-title" x-ref="jobTitleInput" type="text" x-model="newAppForm.job_title" placeholder="z.B. Frontend Developer" required style="margin-bottom: 0;">
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Speichern</button>
                 <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewAppModal = false">Abbrechen</button>
