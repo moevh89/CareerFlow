@@ -7,6 +7,9 @@ document.addEventListener('alpine:init', () => {
         authForm: { email: '', password: '' },
         dashboardData: {},
         applications: [],
+        companies: [],
+        showNewCompanyModal: false,
+        newCompanyForm: { name: '', industry: '', location: '', website: '' },
         statuses: [
             {id: 1, name: 'Interessant'},
             {id: 2, name: 'Bewerbung geplant'},
@@ -35,6 +38,7 @@ document.addEventListener('alpine:init', () => {
                 this.isLoggedIn = true;
                 this.loadDashboard();
                 this.loadApplications();
+                this.loadCompanies();
             }
         },
 
@@ -50,6 +54,7 @@ document.addEventListener('alpine:init', () => {
                 this.showToast('Erfolgreich angemeldet');
                 this.loadDashboard();
                 this.loadApplications();
+                this.loadCompanies();
             } else {
                 this.showToast('Anmeldung fehlgeschlagen. Bitte prüfe deine Daten.');
             }
@@ -65,6 +70,7 @@ document.addEventListener('alpine:init', () => {
             this.currentView = view;
             if(view === 'dashboard') this.loadDashboard();
             if(view === 'board') this.loadApplications();
+            if(view === 'companies') this.loadCompanies();
         },
 
         async loadDashboard() {
@@ -78,6 +84,30 @@ document.addEventListener('alpine:init', () => {
             const res = await fetch('/api/applications');
             if (res.ok) {
                 this.applications = await res.json();
+            }
+        },
+
+        async loadCompanies() {
+            const res = await fetch('/api/companies');
+            if (res.ok) {
+                this.companies = await res.json();
+            }
+        },
+
+        async createCompany() {
+            const res = await fetch('/api/companies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...this.newCompanyForm, csrf_token: this.csrfToken })
+            });
+
+            if (res.ok) {
+                this.showToast('Firma erfolgreich angelegt');
+                this.showNewCompanyModal = false;
+                this.newCompanyForm = { name: '', industry: '', location: '', website: '' };
+                this.loadCompanies();
+            } else {
+                this.showToast('Fehler beim Anlegen der Firma');
             }
         },
 
