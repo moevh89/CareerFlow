@@ -26,9 +26,9 @@ class ApplicationController extends Controller {
     }
 
     public function store() {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
+        $data = $this->getJson();
+        if (!$this->validateCsrf($data)) {
+            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
         $db = Database::getInstance()->getConnection();
@@ -60,18 +60,18 @@ class ApplicationController extends Controller {
             $logStmt->execute([$applicationId, Auth::id(), 'Bewerbung erstellt', 'Die Bewerbung wurde angelegt.']);
 
             $db->commit();
-            $this->jsonResponse(['success' => true, 'id' => $applicationId]);
+            return $this->jsonResponse(['success' => true, 'id' => $applicationId]);
 
         } catch (\Exception $e) {
             $db->rollBack();
-            $this->jsonResponse(['error' => 'Failed to create application: ' . $e->getMessage()], 500);
+            return $this->jsonResponse(['error' => 'Failed to create application: ' . $e->getMessage()], 500);
         }
     }
 
     public function updateStatus($id) {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
+        $data = $this->getJson();
+        if (!$this->validateCsrf($data)) {
+            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
         $db = Database::getInstance()->getConnection();
@@ -79,7 +79,7 @@ class ApplicationController extends Controller {
         $stmt = $db->prepare("SELECT id FROM applications WHERE id = ? AND user_id = ?");
         $stmt->execute([$id, Auth::id()]);
         if (!$stmt->fetch()) {
-             $this->jsonResponse(['error' => 'Not found'], 404);
+             return $this->jsonResponse(['error' => 'Not found'], 404);
         }
 
         $newStatusId = $data['status_id'];
@@ -99,10 +99,10 @@ class ApplicationController extends Controller {
             $logStmt->execute([$id, Auth::id(), 'Status geändert', 'Status geändert auf ' . $statusName]);
 
             $db->commit();
-            $this->jsonResponse(['success' => true]);
+            return $this->jsonResponse(['success' => true]);
         } catch (\Exception $e) {
             $db->rollBack();
-            $this->jsonResponse(['error' => 'Failed to update status'], 500);
+            return $this->jsonResponse(['error' => 'Failed to update status'], 500);
         }
     }
 }
