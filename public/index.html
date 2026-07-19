@@ -98,6 +98,25 @@
                 </div>
             </div>
 
+            <!-- Companies View -->
+            <div x-show="isLoggedIn && currentView === 'companies'">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h1>Firmen</h1>
+                    <button class="btn" @click="showNewCompanyModal = true; $nextTick(() => $refs.companyNameInput.focus())">+ Neue Firma</button>
+                </div>
+
+                <div class="grid">
+                    <template x-for="company in companies" :key="company.id">
+                        <div class="card">
+                            <h3 style="margin-top: 0;" x-text="company.name"></h3>
+                            <p style="color: gray; margin-bottom: 0.5rem;" x-show="company.industry" x-text="company.industry"></p>
+                            <p style="margin-bottom: 0.5rem;" x-show="company.location">📍 <span x-text="company.location"></span></p>
+                            <a :href="company.website" target="_blank" style="color: var(--primary); text-decoration: none;" x-show="company.website?.startsWith('http')">🌐 Webseite besuchen</a>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -112,6 +131,33 @@
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Speichern</button>
                 <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewAppModal = false">Abbrechen</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Company Modal -->
+    <div x-show="showNewCompanyModal" class="toast-container" style="top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100;" x-cloak role="dialog" aria-modal="true" aria-labelledby="new-company-modal-title" @keydown.escape.window="showNewCompanyModal = false">
+        <div class="card" style="width: 400px; position: relative;" @click.away="showNewCompanyModal = false">
+            <h2 id="new-company-modal-title">Neue Firma</h2>
+            <form @submit.prevent="createCompany">
+                <div style="margin-bottom: 1rem;">
+                    <label for="company-name" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Name *</label>
+                    <input id="company-name" type="text" x-model="newCompanyForm.name" x-ref="companyNameInput" placeholder="z.B. Tech Corp" required style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="company-industry" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Branche</label>
+                    <input id="company-industry" type="text" x-model="newCompanyForm.industry" placeholder="z.B. IT" style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="company-location" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Standort</label>
+                    <input id="company-location" type="text" x-model="newCompanyForm.location" placeholder="z.B. Berlin" style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="company-website" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Webseite</label>
+                    <input id="company-website" type="url" x-model="newCompanyForm.website" placeholder="https://..." style="margin-bottom: 0; width: 100%;">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Speichern</button>
+                <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewCompanyModal = false">Abbrechen</button>
             </form>
         </div>
     </div>
