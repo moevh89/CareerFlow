@@ -25,15 +25,15 @@ class CompanyController extends Controller {
         $company = $stmt->fetch();
 
         if (!$company) {
-            $this->jsonResponse(['error' => 'Not found'], 404);
+            return $this->jsonResponse(['error' => 'Not found'], 404);
         }
-        $this->jsonResponse($company);
+        return $this->jsonResponse($company);
     }
 
     public function store() {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['csrf_token']) || !Auth::verifyCSRFToken($data['csrf_token'])) {
-            $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
+        $data = $this->getJson();
+        if (!$this->validateCsrf($data)) {
+            return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
         $db = Database::getInstance()->getConnection();
@@ -51,8 +51,8 @@ class CompanyController extends Controller {
         ]);
 
         if ($success) {
-            $this->jsonResponse(['success' => true, 'id' => $db->lastInsertId()]);
+            return $this->jsonResponse(['success' => true, 'id' => $db->lastInsertId()]);
         }
-        $this->jsonResponse(['error' => 'Failed to create company'], 500);
+        return $this->jsonResponse(['error' => 'Failed to create company'], 500);
     }
 }
