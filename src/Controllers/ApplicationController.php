@@ -2,7 +2,6 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\Database;
 use App\Core\Auth;
 
 class ApplicationController extends Controller {
@@ -12,7 +11,7 @@ class ApplicationController extends Controller {
     }
 
     public function index() {
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
         $stmt = $db->prepare("
             SELECT a.*, c.name as company_name, c.logo as company_logo, s.name as status_name, s.color as status_color
             FROM applications a
@@ -31,7 +30,7 @@ class ApplicationController extends Controller {
             return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
         $db->beginTransaction();
 
         try {
@@ -74,7 +73,7 @@ class ApplicationController extends Controller {
             return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
 
         $stmt = $db->prepare("SELECT id FROM applications WHERE id = ? AND user_id = ?");
         $stmt->execute([$id, Auth::id()]);
