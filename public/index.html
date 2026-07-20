@@ -105,7 +105,15 @@
                     <button class="btn" @click="showNewCompanyModal = true; $nextTick(() => $refs.companyNameInput.focus())">+ Neue Firma</button>
                 </div>
 
-                <div class="grid">
+                <!-- Empty State -->
+                <div x-show="companies.length === 0" class="card" style="text-align: center; padding: 3rem 1rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+                    <h3>Noch keine Firmen</h3>
+                    <p style="color: gray; margin-bottom: 1.5rem;">Füge deine erste Firma hinzu, um den Überblick zu behalten.</p>
+                    <button class="btn" @click="showNewCompanyModal = true; $nextTick(() => $refs.companyNameInput.focus())">+ Erste Firma hinzufügen</button>
+                </div>
+
+                <div class="grid" x-show="companies.length > 0">
                     <template x-for="company in companies" :key="company.id">
                         <div class="card">
                             <h3 style="margin-top: 0;" x-text="company.name"></h3>
