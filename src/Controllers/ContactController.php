@@ -12,7 +12,7 @@ class ContactController extends Controller {
     }
 
     public function index() {
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
         // Return contacts for user's companies
         $stmt = $db->prepare("
             SELECT c.*, comp.name as company_name
@@ -30,7 +30,7 @@ class ContactController extends Controller {
             return $this->jsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
 
         // Verify company belongs to user
         $stmt = $db->prepare("SELECT id FROM companies WHERE id = ? AND user_id = ?");
