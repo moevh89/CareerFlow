@@ -15,20 +15,22 @@ class DashboardController extends Controller {
         $db = Database::getInstance()->getConnection();
         $userId = Auth::id();
 
-        // Active applications
-        $stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ? AND status_id NOT IN (8, 9)"); // 8=Zusage, 9=Absage
+        // Combine status counts into a single query to reduce database round-trips
+        // 8=Zusage, 9=Absage
+        $stmt = $db->prepare("
+            SELECT
+                COUNT(CASE WHEN status_id NOT IN (8, 9) THEN 1 END) as active_applications,
+                COUNT(CASE WHEN status_id = 8 THEN 1 END) as offers,
+                COUNT(CASE WHEN status_id = 9 THEN 1 END) as rejections
+            FROM applications
+            WHERE user_id = ?
+        ");
         $stmt->execute([$userId]);
-        $activeApplications = $stmt->fetchColumn();
+        $counts = $stmt->fetch();
 
-        // Offers
-        $stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ? AND status_id = 8");
-        $stmt->execute([$userId]);
-        $offers = $stmt->fetchColumn();
-
-        // Rejections
-        $stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ? AND status_id = 9");
-        $stmt->execute([$userId]);
-        $rejections = $stmt->fetchColumn();
+        $activeApplications = (int) $counts['active_applications'];
+        $offers = (int) $counts['offers'];
+        $rejections = (int) $counts['rejections'];
 
         // Upcoming interviews
         $stmt = $db->prepare("
