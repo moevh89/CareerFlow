@@ -29,6 +29,7 @@
             <div class="nav-item" :class="{'active': currentView === 'dashboard'}" @click="navigate('dashboard')">Dashboard</div>
             <div class="nav-item" :class="{'active': currentView === 'board'}" @click="navigate('board')">Kanban Board</div>
             <div class="nav-item" :class="{'active': currentView === 'companies'}" @click="navigate('companies')">Firmen</div>
+            <div class="nav-item" :class="{'active': currentView === 'contacts'}" @click="navigate('contacts')">Kontakte</div>
             <div style="flex-grow: 1;"></div>
             <div class="nav-item" @click="logout()">Abmelden</div>
         </nav>
@@ -117,6 +118,28 @@
                 </div>
             </div>
 
+            <!-- Contacts View -->
+            <div x-show="isLoggedIn && currentView === 'contacts'">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h1>Kontakte</h1>
+                    <button class="btn" @click="showNewContactModal = true; $nextTick(() => $refs.contactNameInput.focus())">+ Neuer Kontakt</button>
+                </div>
+
+                <div class="grid">
+                    <template x-for="contact in contacts" :key="contact.id">
+                        <div class="card">
+                            <h3 style="margin-top: 0;" x-text="contact.name"></h3>
+                            <p style="font-weight: 500; margin-bottom: 0.25rem;" x-show="contact.position" x-text="contact.position"></p>
+                            <p style="color: gray; margin-bottom: 0.5rem;" x-show="contact.company_name" x-text="contact.company_name"></p>
+
+                            <p style="margin-bottom: 0.25rem;" x-show="contact.email">✉️ <a :href="'mailto:' + contact.email" x-text="contact.email" style="color: var(--primary); text-decoration: none;"></a></p>
+                            <p style="margin-bottom: 0.5rem;" x-show="contact.phone">📞 <span x-text="contact.phone"></span></p>
+                            <a :href="contact.linkedin_profile" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-block; margin-top: 0.5rem;" x-show="contact.linkedin_profile?.startsWith('http')">🌐 LinkedIn Profil</a>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -159,6 +182,46 @@
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Speichern</button>
                 <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewCompanyModal = false">Abbrechen</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Contact Modal -->
+    <div x-show="showNewContactModal" class="toast-container" style="top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100;" x-cloak role="dialog" aria-modal="true" aria-labelledby="new-contact-modal-title" @keydown.escape.window="showNewContactModal = false">
+        <div class="card" style="width: 400px; position: relative; max-height: 90vh; overflow-y: auto;" @click.away="showNewContactModal = false">
+            <h2 id="new-contact-modal-title">Neuer Kontakt</h2>
+            <form @submit.prevent="createContact">
+                <div style="margin-bottom: 1rem;">
+                    <label for="contact-company" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Firma *</label>
+                    <select id="contact-company" x-model="newContactForm.company_id" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="" disabled>Bitte wählen...</option>
+                        <template x-for="company in companies" :key="company.id">
+                            <option :value="company.id" x-text="company.name"></option>
+                        </template>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="contact-name" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Name *</label>
+                    <input id="contact-name" type="text" x-model="newContactForm.name" x-ref="contactNameInput" placeholder="z.B. Max Muster" required style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="contact-position" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Position</label>
+                    <input id="contact-position" type="text" x-model="newContactForm.position" placeholder="z.B. HR Manager" style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="contact-email" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">E-Mail</label>
+                    <input id="contact-email" type="email" x-model="newContactForm.email" placeholder="max@..." style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="contact-phone" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Telefon</label>
+                    <input id="contact-phone" type="tel" x-model="newContactForm.phone" placeholder="+49..." style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="contact-linkedin" style="display: block; font-weight: 500; margin-bottom: 0.25rem;">LinkedIn Profil</label>
+                    <input id="contact-linkedin" type="url" x-model="newContactForm.linkedin_profile" placeholder="https://linkedin.com/in/..." style="margin-bottom: 0; width: 100%;">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Speichern</button>
+                <button type="button" class="btn" style="width: 100%; background: transparent; color: gray; margin-top: 0.5rem;" @click="showNewContactModal = false">Abbrechen</button>
             </form>
         </div>
     </div>
