@@ -24,13 +24,13 @@
     <div id="app" x-cloak>
 
         <!-- Sidebar Navigation -->
-        <nav class="sidebar" x-show="isLoggedIn">
+        <nav class="sidebar" x-show="isLoggedIn" aria-label="Hauptnavigation">
             <div class="sidebar-logo">CareerFlow</div>
-            <div class="nav-item" :class="{'active': currentView === 'dashboard'}" @click="navigate('dashboard')">Dashboard</div>
-            <div class="nav-item" :class="{'active': currentView === 'board'}" @click="navigate('board')">Kanban Board</div>
-            <div class="nav-item" :class="{'active': currentView === 'companies'}" @click="navigate('companies')">Firmen</div>
+            <div class="nav-item" role="button" tabindex="0" :aria-current="currentView === 'dashboard' ? 'page' : 'false'" :class="{'active': currentView === 'dashboard'}" @click="navigate('dashboard')" @keydown.enter="navigate('dashboard')" @keydown.space.prevent="navigate('dashboard')">Dashboard</div>
+            <div class="nav-item" role="button" tabindex="0" :aria-current="currentView === 'board' ? 'page' : 'false'" :class="{'active': currentView === 'board'}" @click="navigate('board')" @keydown.enter="navigate('board')" @keydown.space.prevent="navigate('board')">Kanban Board</div>
+            <div class="nav-item" role="button" tabindex="0" :aria-current="currentView === 'companies' ? 'page' : 'false'" :class="{'active': currentView === 'companies'}" @click="navigate('companies')" @keydown.enter="navigate('companies')" @keydown.space.prevent="navigate('companies')">Firmen</div>
             <div style="flex-grow: 1;"></div>
-            <div class="nav-item" @click="logout()">Abmelden</div>
+            <div class="nav-item" role="button" tabindex="0" @click="logout()" @keydown.enter="logout()" @keydown.space.prevent="logout()">Abmelden</div>
         </nav>
 
         <!-- Main Content Area -->
