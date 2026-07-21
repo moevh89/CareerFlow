@@ -32,6 +32,16 @@ class ApplicationController extends Controller {
         }
 
         $db = Database::getInstance()->getConnection();
+
+        // Security: Check if company_id belongs to user
+        if (!empty($data['company_id'])) {
+            $checkStmt = $db->prepare("SELECT id FROM companies WHERE id = ? AND user_id = ?");
+            $checkStmt->execute([$data['company_id'], Auth::id()]);
+            if (!$checkStmt->fetch()) {
+                return $this->jsonResponse(['error' => 'Invalid company ID or not owned by user'], 403);
+            }
+        }
+
         $db->beginTransaction();
 
         try {
