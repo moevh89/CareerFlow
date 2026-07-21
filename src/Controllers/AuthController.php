@@ -26,7 +26,7 @@ class AuthController extends Controller {
             return $this->jsonResponse(['error' => 'Email and password are required'], 400);
         }
 
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
 
         // Check if email exists
         $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
@@ -57,7 +57,7 @@ class AuthController extends Controller {
         $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
 
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
         $stmt = $db->prepare("SELECT id, password FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
@@ -80,7 +80,7 @@ class AuthController extends Controller {
             return $this->jsonResponse(['error' => 'Unauthorized'], 401);
         }
 
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
         $stmt = $db->prepare("SELECT id, email, name, created_at FROM users WHERE id = ?");
         $stmt->execute([Auth::id()]);
         $user = $stmt->fetch();

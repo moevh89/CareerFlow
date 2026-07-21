@@ -12,7 +12,7 @@ class DashboardController extends Controller {
     }
 
     public function index() {
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
         $userId = Auth::id();
 
         // Active applications
