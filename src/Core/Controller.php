@@ -20,4 +20,8 @@ class Controller {
     protected function validateCsrf($data) {
         return isset($data['csrf_token']) && Auth::verifyCSRFToken($data['csrf_token']);
     }
+    protected function db() {
+        return Database::getInstance()->getConnection();
+    }
+
 }
