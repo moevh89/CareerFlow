@@ -1,2 +1,4 @@
 vendor/
 .env\ndata/careerflow.sqlite
+.env
+data/
