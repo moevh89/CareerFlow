@@ -2,7 +2,6 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\Database;
 use App\Core\Auth;
 
 class DashboardController extends Controller {
@@ -12,7 +11,7 @@ class DashboardController extends Controller {
     }
 
     public function index() {
-        $db = Database::getInstance()->getConnection();
+        $db = $this->db();
         $userId = Auth::id();
 
         // Active applications
