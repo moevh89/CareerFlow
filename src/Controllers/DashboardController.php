@@ -16,6 +16,7 @@ class DashboardController extends Controller {
         $userId = Auth::id();
 
         // Combine aggregate counts to prevent multiple database roundtrips and full table scans
+        // Application stats
         $stmt = $db->prepare("
             SELECT
                 COUNT(CASE WHEN status_id NOT IN (8, 9) THEN 1 END) as active_applications,
@@ -30,6 +31,11 @@ class DashboardController extends Controller {
         $activeApplications = $counts['active_applications'] ?? 0;
         $offers = $counts['offers'] ?? 0;
         $rejections = $counts['rejections'] ?? 0;
+        $stats = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $activeApplications = $stats['active_applications'];
+        $offers = $stats['offers'];
+        $rejections = $stats['rejections'];
 
         // Upcoming interviews
         $stmt = $db->prepare("
