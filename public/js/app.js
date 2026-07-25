@@ -10,6 +10,9 @@ document.addEventListener('alpine:init', () => {
         companies: [],
         showNewCompanyModal: false,
         newCompanyForm: { name: '', industry: '', location: '', website: '' },
+        contacts: [],
+        showNewContactModal: false,
+        newContactForm: { company_id: '', name: '', position: '', email: '', phone: '', linkedin_profile: '', notes: '' },
         statuses: [
             {id: 1, name: 'Interessant'},
             {id: 2, name: 'Bewerbung geplant'},
@@ -39,6 +42,7 @@ document.addEventListener('alpine:init', () => {
                 this.loadDashboard();
                 this.loadApplications();
                 this.loadCompanies();
+                this.loadContacts();
             }
         },
 
@@ -55,6 +59,7 @@ document.addEventListener('alpine:init', () => {
                 this.loadDashboard();
                 this.loadApplications();
                 this.loadCompanies();
+                this.loadContacts();
             } else {
                 this.showToast('Anmeldung fehlgeschlagen. Bitte prüfe deine Daten.');
             }
@@ -71,6 +76,7 @@ document.addEventListener('alpine:init', () => {
             if(view === 'dashboard') this.loadDashboard();
             if(view === 'board') this.loadApplications();
             if(view === 'companies') this.loadCompanies();
+            if(view === 'contacts') this.loadContacts();
         },
 
         async loadDashboard() {
@@ -91,6 +97,13 @@ document.addEventListener('alpine:init', () => {
             const res = await fetch('/api/companies');
             if (res.ok) {
                 this.companies = await res.json();
+            }
+        },
+
+        async loadContacts() {
+            const res = await fetch('/api/contacts');
+            if (res.ok) {
+                this.contacts = await res.json();
             }
         },
 
@@ -126,6 +139,23 @@ document.addEventListener('alpine:init', () => {
                 this.loadDashboard();
             } else {
                 this.showToast('Fehler beim Anlegen der Bewerbung');
+            }
+        },
+
+        async createContact() {
+            const res = await fetch('/api/contacts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...this.newContactForm, csrf_token: this.csrfToken })
+            });
+
+            if (res.ok) {
+                this.showToast('Kontakt erfolgreich angelegt');
+                this.showNewContactModal = false;
+                this.newContactForm = { company_id: '', name: '', position: '', email: '', phone: '', linkedin_profile: '', notes: '' };
+                this.loadContacts();
+            } else {
+                this.showToast('Fehler beim Anlegen des Kontakts');
             }
         },
 
