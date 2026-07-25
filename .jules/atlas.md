@@ -6,6 +6,11 @@
 
 **Action:** In der Installationsanleitung (README) explizit erwähnen, dass kein Composer benötigt wird, um Verwirrung bei neuen Entwicklern zu vermeiden.
 
+## 2026-07-22 - Manuelle SQLite Migration
+
+**Learning:** Das webbasierte Setup (`/setup.php`) unterstützt ausschließlich MySQL/MariaDB. Bei lokaler Entwicklung mit SQLite muss die Datenbank initial manuell über die PHP-CLI migriert werden.
+
+**Action:** Immer die CLI-Befehle zur Datenbankmigration in der Installationsanleitung dokumentieren, da das Frontend-Setup dies nicht abdeckt.
 ## 2026-07-25 - SQLite Setup Dokumentation
 
 **Learning:** Der webbasierte Setup-Prozess (`setup.php`) unterstützt ausschließlich MySQL/MariaDB. Für die lokale Entwicklung mit SQLite muss die Datenbank manuell über ein CLI-Kommando initialisiert werden, da Anwender ansonsten in einer Endlosschleife im Setup-Prozess für MySQL feststecken.

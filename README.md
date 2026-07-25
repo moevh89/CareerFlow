@@ -33,7 +33,10 @@ Sie wurde speziell so konzipiert, dass sie auf klassischem Shared Hosting läuft
    cp .env.example .env
    ```
 
-   *Hinweis:* Standardmäßig ist in der `.env.example` SQLite als Treiber voreingestellt (`DB_DRIVER=sqlite`). Die Datenbankdatei wird dann im Ordner `data/` erwartet (den Ordner ggf. anlegen).
+   *Hinweis:* Standardmäßig ist in der `.env.example` SQLite als Treiber voreingestellt (`DB_DRIVER=sqlite`). Die Datenbankdatei wird dann im Ordner `data/` erwartet (den Ordner ggf. anlegen). Das webbasierte Setup (`/setup.php`) unterstützt ausschließlich MySQL/MariaDB. Bei lokaler Entwicklung mit SQLite muss die Datenbank initial manuell über die CLI migriert werden:
+   ```bash
+   mkdir -p data && php -r "require 'src/Core/Dotenv.php'; require 'src/Core/Database.php'; require 'src/Core/Migrator.php'; App\Core\Dotenv::load('.env'); App\Core\Migrator::migrate();"
+   ```
 
 3. **Datenbank initialisieren (SQLite)**
    Da der webbasierte Setup-Prozess (`/setup.php`) ausschließlich MySQL/MariaDB unterstützt, muss die lokale SQLite-Datenbank manuell initialisiert werden. Lege dazu den Datenordner an und führe die Migrationen über die Kommandozeile aus:
