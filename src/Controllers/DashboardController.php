@@ -15,6 +15,7 @@ class DashboardController extends Controller {
         $db = Database::getInstance()->getConnection();
         $userId = Auth::id();
 
+        // Application metrics
         // Application stats
         $stmt = $db->prepare("
             SELECT
@@ -25,6 +26,11 @@ class DashboardController extends Controller {
             WHERE user_id = ?
         ");
         $stmt->execute([$userId]);
+        $metrics = $stmt->fetch();
+
+        $activeApplications = $metrics['active_applications'] ?? 0;
+        $offers = $metrics['offers'] ?? 0;
+        $rejections = $metrics['rejections'] ?? 0;
         $stats = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         $activeApplications = $stats['active_applications'];
