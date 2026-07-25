@@ -16,6 +16,7 @@ class DashboardController extends Controller {
         $userId = Auth::id();
 
         // Application metrics
+        // Application stats
         $stmt = $db->prepare("
             SELECT
                 COUNT(CASE WHEN status_id NOT IN (8, 9) THEN 1 END) as active_applications,
@@ -30,6 +31,11 @@ class DashboardController extends Controller {
         $activeApplications = $metrics['active_applications'] ?? 0;
         $offers = $metrics['offers'] ?? 0;
         $rejections = $metrics['rejections'] ?? 0;
+        $stats = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $activeApplications = $stats['active_applications'];
+        $offers = $stats['offers'];
+        $rejections = $stats['rejections'];
 
         // Upcoming interviews
         $stmt = $db->prepare("

@@ -2,3 +2,5 @@ vendor/
 .env\ndata/careerflow.sqlite
 *.sqlite
 *.db
+node_modules/
+data/
