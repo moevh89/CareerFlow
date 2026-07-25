@@ -66,9 +66,14 @@ body {
     font-weight: 500;
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover, .nav-item:focus-visible, .nav-item.active {
     background-color: var(--bg-color);
     color: var(--primary);
+    outline: none;
+}
+
+.nav-item:focus-visible {
+    box-shadow: 0 0 0 2px var(--primary);
 }
 
 .main-content {
