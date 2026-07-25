@@ -15,6 +15,7 @@ class DashboardController extends Controller {
         $db = Database::getInstance()->getConnection();
         $userId = Auth::id();
 
+        // Combine aggregate counts to prevent multiple database roundtrips and full table scans
         // Application stats
         $stmt = $db->prepare("
             SELECT
@@ -25,6 +26,11 @@ class DashboardController extends Controller {
             WHERE user_id = ?
         ");
         $stmt->execute([$userId]);
+        $counts = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $activeApplications = $counts['active_applications'] ?? 0;
+        $offers = $counts['offers'] ?? 0;
+        $rejections = $counts['rejections'] ?? 0;
         $stats = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         $activeApplications = $stats['active_applications'];
